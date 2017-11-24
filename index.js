@@ -10,13 +10,13 @@ for (var i = 0; i <= 19; i++) {
         $('.score_result>ul>li').each(function(idx) {
             var data = $(this);
             var star = data.find('.st_on').attr('style').split(':')[1].split('0.0%')[0];
-            var viewer = data.find('.ico_viewer').text();
-            var str = data.find('p').text().replace(/,/gi,"");
-
-            mecab.pos(str, function(err, result) {
-                console.log(result);
-            });
-
+            var isViewer = data.find('.ico_viewer').text();
+            var comment = data.find('p')[0].children[0].data;
+            if (comment == undefined) {
+                comment = data.find('p')[0].children[1].data;
+            }
+            
+            console.log(star + ',' + isViewer + ',' + comment);
         });
     });
 }
