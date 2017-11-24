@@ -1,7 +1,6 @@
 var mecab = require('mecab-ya');
 var fs = require('fs');
 var xlsx = require('exceljs');
-var xl = require('excel4node');
 
 var workbook = new xlsx.Workbook();
 workbook.xlsx.readFile('test.xlsx')
