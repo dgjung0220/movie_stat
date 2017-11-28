@@ -13,6 +13,6 @@
     "excel4node": "^1.3.0",
     "exceljs": "^0.7.1",
     "mecab-ya": "^0.1.1",
-    "mongoose": "^4.13.4"
+    "mongoose": "^4.13.5"
   }
 }

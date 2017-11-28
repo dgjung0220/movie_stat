@@ -1,30 +1,8 @@
 var client = require('cheerio-httpcli');
-var urlModule = require('url');
-var xl = require('excel4node');
-//var mongoose = require('mongoose');
-var configs = require('./configs.js');
+var Models = require('./models');
+var mongoose = require('mongoose');
 
-/*var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
-            replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };    
-mongoose.connection.openUri('mongodb://'+configs.dbUser+':'+configs.dbpassword+'@ds047075.mlab.com:47075/'+configs.dbName);
-mongoose.connection.on('open', function() {
-    console.log('Mongoose connected.');
-});
-*/
-
-var wb = new xl.Workbook();
-var total = wb.addWorksheet('total');
-total.cell(1,1).string('Count');
-total.cell(1,2).string('평점');
-total.cell(1,3).string('관람유무');
-total.cell(1,4).string('코멘트');
-total.cell(1,5).string('날짜');
-wb.write('test.xlsx');
-
-var movie_id = 163386;
-var TARGET_URL = 'http://movie.naver.com/movie/bi/mi/pointWriteFormList.nhn?code='+movie_id+'&type=after&isActualPointWriteExecute=false&isMileageSubscriptionAlready=false&isMileageSubscriptionReject=false&page=1';
 var param = {};
-
 var checkURLlist = {};
 var idx = 0;
 var count = 0;
@@ -39,7 +17,7 @@ var isExist = (url) => {
     return false;
 }
 
-var movieCommentsCrawling = (url) => {
+var movieCommentsCrawling = (movie_id, type, url) => {
     
     if (isExist(url)) return;
     
@@ -56,20 +34,28 @@ var movieCommentsCrawling = (url) => {
             
             count++;
             console.log(count+' , ' + star + ',' + isViewer + ',' + comment + ',' + date);
-            total.cell(count+1,1).number(parseInt(count));
-            total.cell(count+1,2).number(parseInt(star));
-            total.cell(count+1,3).string(isViewer);
-            total.cell(count+1,4).string(comment);
-            total.cell(count+1,5).string(date);
-            wb.write('test.xlsx');
+
+            var comment = new Models.Comments({
+                movie_id: movie_id,
+                type: type,
+                rating: star,
+                isViewer: isViewer,
+                comment: comment,
+                written_date: date
+            });
+
+            comment.save();
         });
 
         $('.paging>div>a').each(function(idx) {
             var url = $(this).attr('href');
-            movieCommentsCrawling('http://movie.naver.com'+url);
+            movieCommentsCrawling(movie_id, type, 'http://movie.naver.com'+url);
         })
     });
 }
 
-
-movieCommentsCrawling(TARGET_URL);
+exports.getCommentsByNaver = (movie_id, type) => {
+    Models.Comments.remove({},function(err,doc){});
+    var TARGET_URL = 'http://movie.naver.com/movie/bi/mi/pointWriteFormList.nhn?code='+movie_id+'&type='+type+'&isActualPointWriteExecute=false&isMileageSubscriptionAlready=false&isMileageSubscriptionReject=false&page=1';
+    movieCommentsCrawling(movie_id, type, TARGET_URL);
+}
