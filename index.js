@@ -1,40 +1,32 @@
+var path = require('path');
+var express = require('express');
+var app = express();
+var exphs = require('express-handlebars');
 var mongoose = require('mongoose');
-var PythonShell = require('python-shell');
+var bodyParser = require('body-parser');
 
-var Models = require('./models');
-var movie_crawling = require('./movie_crawling.js');
-var morpheme_analysis = require('./morpheme_analysis');
+var route = require('./route.js');
+
+app.set('views', __dirname + '/views');
+app.engine('handlebars', exphs.create({
+    defaultLayout: 'main',
+    layoutsDir: app.get('views') + '/layouts',
+    partialsDir: app.get('views') + '/partials'
+}).engine);
+app.set('view engine', 'handlebars');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.set('port', process.env.PORT || 3000);
+
+app.use('/', route);
+app.use('/public/', express.static(path.join(__dirname, 'public')));
 
 mongoose.connection.openUri('mongodb://localhost/rosybrown');
 mongoose.connection.on('open', function() {
     console.log('[Mongoose] Connected to Rosy Brown Database.')
 });
 
-/* create morpheme list scheme*/
-var morpheme_list = new Models.MorphemeList({
-    noun: 'dump'
+app.listen(app.get('port'), function() {
+    console.log('Socket IO server listening on port' + app.get('port'));
 });
-morpheme_list.save();
-
-//movie_crawling.getCommentsByNaver(163386, 'after');
-
-var pythonShell_option = {
-    mode : 'text',
-    pythonPath: '',
-    pythonOptions: ['-u'],
-    scriptPath: '',
-    args: []
-};
-
-/*
-movie_crawling.getCommentsByNaver(85579,'before');
-PythonShell.run('python_morpheme_analysis/extract_morpheme.py', pythonShell_option, function (err, results) {
-    if (err) throw err;
-    console.log('%j', results);
-}, function() {
-    morpheme_analysis.morphemeAnalysis()
-})    
-morpheme_analysis.morphemeAnalysis();
-*/
-
-movie_crawling.getCommentsByNaver(85579,'before');
