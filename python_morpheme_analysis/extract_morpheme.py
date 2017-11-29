@@ -12,7 +12,7 @@ morpheme_list = db.morphemelists
 def calculateRating():
     total_cnt = comments.count()
     total_rating = 0
-    for comment in comments.find():
+    for comment in comments.find({}):
         total_rating += comment['rating']
     
     return (total_rating/total_cnt)
@@ -23,7 +23,7 @@ def extractOverAverage(average):
         result = kkma.nouns(comment["comment"])
         
         for i in result:
-            pprint(i)
+            print(i)
             morpheme_list.insert({"noun":i})
 
 extractOverAverage(calculateRating())

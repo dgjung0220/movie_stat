@@ -24,27 +24,34 @@ var movieCommentsCrawling = (movie_id, type, url) => {
     client.fetch(url, param, function(err, $, res) {
         $('.score_result>ul>li').each(function(idx) {
             var data = $(this);
-            var star = data.find('.st_on').attr('style').split(':')[1].split('0.0%')[0];
-            var isViewer = data.find('.ico_viewer').text();
-            var comment = data.find('p')[0].children[0].data;
-            if (comment == undefined) {
-                comment = data.find('p')[0].children[1].data;
-            }
-            var date = data.find('em')[2].children[0].data;
+            var star, isViewer, comment, date;
             
-            count++;
-            console.log(count+' , ' + star + ',' + isViewer + ',' + comment + ',' + date);
+            try {
+                star = data.find('.st_on').attr('style').split(':')[1].split('0.0%')[0];
+                isViewer = data.find('.ico_viewer').text();
+                comment = data.find('p')[0].children[0].data;
+                if (comment == undefined) {
+                    comment = data.find('p')[0].children[1].data;
+                }
+                date = data.find('em')[2].children[0].data;
+            } catch(exception) {
+                console.log(exception);
+            } finally {
+                count++;
+                console.log(count+' , ' + star + ',' + isViewer + ',' + comment + ',' + date);
 
-            var comment = new Models.Comments({
-                movie_id: movie_id,
-                type: type,
-                rating: star,
-                isViewer: isViewer,
-                comment: comment,
-                written_date: date
-            });
-
-            comment.save();
+                if (star !== undefined && isViewer !== undefined && comment !== undefined && date !== undefined) {
+                    var commentInfo = new Models.Comments({
+                        movie_id: movie_id,
+                        type: type,
+                        rating: star,
+                        isViewer: isViewer,
+                        comment: comment,
+                        written_date: date
+                    });
+                    commentInfo.save();
+                }
+            }
         });
 
         $('.paging>div>a').each(function(idx) {
