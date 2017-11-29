@@ -9,6 +9,7 @@
   "author": "dg.jung",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.0",
     "body-parser": "^1.18.2",
     "cheerio-httpcli": "^0.7.2",
     "excel4node": "^1.3.0",
