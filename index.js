@@ -28,5 +28,5 @@ mongoose.connection.on('open', function() {
 });
 
 app.listen(app.get('port'), function() {
-    console.log('Socket IO server listening on port' + app.get('port'));
+    console.log('Socket IO server listening on port ' + app.get('port'));
 });

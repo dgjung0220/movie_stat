@@ -1,5 +1,5 @@
 var client = require('cheerio-httpcli');
-var Models = require('./models');
+var Models = require('../models');
 var mongoose = require('mongoose');
 
 var param = {};
@@ -61,7 +61,10 @@ var movieCommentsCrawling = (movie_id, type, url) => {
     });
 }
 
-exports.getCommentsByNaver = (movie_id, type) => {
+exports.getCommentsByNaver = (req, res) => {
+    var movie_id = req.params.movie_code;
+    var type = 'after';
+
     Models.Comments.remove({},function(err,doc){});
     var TARGET_URL = 'http://movie.naver.com/movie/bi/mi/pointWriteFormList.nhn?code='+movie_id+'&type='+type+'&isActualPointWriteExecute=false&isMileageSubscriptionAlready=false&isMileageSubscriptionReject=false&page=1';
     movieCommentsCrawling(movie_id, type, TARGET_URL);

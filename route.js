@@ -1,15 +1,19 @@
 var express = require('express');
 var router = express.Router();
-var Service = require('./service');
+var movie = require('./controllers/movie');
 
 router.get('/', function(req, res) {
-    res.render('index');
+    
+    if (req.query['movie_name']) {
+        movie.searchCodeByName(req,res);
+    } else {
+        res.render('index');
+    }
 });
 
-router.get('/:movie_name', function(req, res) {
-    var result = Service.Get_Movie_Id.search_movie(req.params.movie_name);
-
-    console.log(result);
+router.get('/movie_id/:movie_code', function(req, res) {
+    console.log(req.params.movie_code);
+    movie.searchCommentsById(req, res);
 });
 
 module.exports = router;
